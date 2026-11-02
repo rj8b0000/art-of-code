@@ -28,10 +28,10 @@ Taken from the Aldo OMS Dashboard API collection (25 requests in 8 folders) and 
 - Two environments: Local and Production. Each has `baseUrl`, `userName`, `password`, `accessToken`, `refreshToken`, `tokenExpiresAt`, plus any API-specific ids or date windows.
 - `password`, `accessToken` and `refreshToken` are `secret` typed.
 - **Committed environment files never contain real credential values.** Leave secret values empty, or reference a Postman vault secret. Never copy values from an existing environment export into a repository, doc or spec.
-- Local `baseUrl` matches the project's dev launch URL (`launchSettings.json` or `appsettings.Development.json`).
+- Local `baseUrl` matches the project's dev server URL (see `api-discovery.md` for where each framework configures it).
 - Collection variables hold sample ids used by default requests; they must be harmless sample data, never real customer identifiers.
 
 ## Format
 
-- Hand-authored or imported collections are Postman Collection v2.1.0 JSON (`references/collection-v21-skeleton.json` is the starting point; rebuild it with `node references/build-skeleton.mjs` after editing the scripts).
+- Hand-authored or imported collections are Postman Collection v2.1.0 JSON (`references/collection-v21-skeleton.json` is the starting point; plugin maintainers rebuild it with `node references/build-skeleton.mjs` after editing the scripts; using the skill never requires Node). The scripts run inside Postman, so the API's own language is irrelevant.
 - Git-native projects using Postman CLI v3 YAML (`postman/collections/...`) follow the `postman:collection-schema-v3` skill instead.

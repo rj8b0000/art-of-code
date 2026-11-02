@@ -3,7 +3,9 @@
 A Claude Code plugin with two skills:
 
 - **`kiro-spec-driven`** — spec-driven development (requirements, design, tasks, implementation) that writes **real Kiro specs** under `.kiro/specs/`, so the result opens natively in the [Kiro](https://kiro.dev) IDE. Specs get sequential ids (`0001`, `0002`, ...).
-- **`postman-collection`** — creates and updates a Postman collection and its Local/Production environments for an HTTP API, from an OpenAPI document or from the controllers, with bearer auth and auto-login built in.
+- **`postman-collection`** — creates and updates a Postman collection and its Local/Production environments for an HTTP API, from an OpenAPI document or from the route definitions, with bearer auth and auto-login built in.
+
+**Both skills work in any language or stack**: Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby, or a mix. See [Any language](#any-language).
 
 Independent community project; not an official Anthropic or Kiro product.
 
@@ -47,7 +49,14 @@ Open the project in Kiro and the spec appears in its specs panel. Details: [docs
 
 ### Postman collections
 
-Creates or updates a collection from an OpenAPI document (via the Postman CLI) or from controllers, keeping hand-added scripts, removing requests for deleted endpoints, and wiring Bearer `{{accessToken}}` with an auto-login pre-request script. Real credentials are never written to files. Details: [docs/postman-collection.md](docs/postman-collection.md).
+Creates or updates a collection from an OpenAPI document (via the Postman CLI) or from route definitions, keeping hand-added scripts, removing requests for deleted endpoints, and wiring Bearer `{{accessToken}}` with an auto-login pre-request script. Real credentials are never written to files. Details: [docs/postman-collection.md](docs/postman-collection.md).
+
+## Any language
+
+Neither skill depends on the project's language or on any runtime.
+
+- **Specs** are markdown plus one JSON line, so they are identical for every stack. The skill detects the stack from marker files (`package.json`, `*.csproj`, `pyproject.toml`, `composer.json`, `Cargo.toml`, `go.mod`, `pom.xml`/`build.gradle`, `Gemfile`), uses the project's own build and test commands, and writes design snippets in its language. Sequential spec ids are computed with the agent's file tools, bash or PowerShell; Node is optional. See `references/stack-detection.md` and `references/spec-id.md`.
+- **Postman collections** only care about HTTP. The skill finds the contract through each framework's OpenAPI support (ASP.NET, NestJS, Express, Fastify, FastAPI, Django REST framework, Flask, Laravel, Symfony, Spring, Go, Rust, Rails) or reads route declarations when there is no spec. See `references/api-discovery.md`.
 
 ## Repository layout
 
@@ -55,8 +64,8 @@ Creates or updates a collection from an OpenAPI document (via the Postman CLI) o
 .claude-plugin/marketplace.json
 plugins/kiro-spec-driven/
   .claude-plugin/plugin.json
-  skills/kiro-spec-driven/     SKILL.md, templates/, references/, scripts/next-spec-id.mjs
-  skills/postman-collection/   SKILL.md, references/ (scripts, skeleton collection, conventions)
+  skills/kiro-spec-driven/     SKILL.md, templates/, references/ (format, EARS, stack detection, spec id), scripts/next-spec-id.mjs (optional)
+  skills/postman-collection/   SKILL.md, references/ (scripts, skeleton collection, conventions, API discovery)
 docs/                          usage and per-skill guides
 ```
 

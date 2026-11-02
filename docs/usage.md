@@ -28,7 +28,11 @@ Open the same folder in Kiro to view and run the spec there.
 
 ## 3. Create or update a Postman collection
 
-Ask ("create a Postman collection for this API", "add the new endpoints to the collection") or run `/kiro-spec-driven:postman-collection`. Claude inspects what exists (collection, OpenAPI document, controllers, Postman CLI), then generates, hand-authors or updates in place, wires auth, and lints.
+Ask ("create a Postman collection for this API", "add the new endpoints to the collection") or run `/kiro-spec-driven:postman-collection`. Claude inspects what exists (collection, OpenAPI document, route definitions, Postman CLI), then generates, hand-authors or updates in place, wires auth, and lints.
+
+## Any language
+
+Both skills work for Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby and mixed repositories. Nothing in the spec format is language-specific, and the Postman skill only deals with HTTP. Claude identifies your stack from its marker files and uses your project's own build, test and OpenAPI tooling.
 
 ## 4. Update the plugin
 
@@ -40,4 +44,4 @@ Ask ("create a Postman collection for this API", "add the new endpoints to the c
 
 - **Skill not listed**: run `/plugin`, check the Installed tab, restart the session.
 - **Cannot add the marketplace**: for a private repo, confirm your git SSH key or HTTPS credential can read `rj8b0000/claude-kiro-spec-driven`.
-- **Spec id looks wrong**: ids come from `scripts/next-spec-id.mjs` (highest numeric `specId` + 1); non-numeric legacy ids such as UUIDs are ignored.
+- **Spec id looks wrong**: ids are the highest numeric `specId` + 1; non-numeric legacy ids such as UUIDs are ignored. See `references/spec-id.md` (no Node required).

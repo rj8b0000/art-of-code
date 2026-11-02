@@ -1,13 +1,15 @@
 ---
 name: kiro-spec-driven
-description: Use this skill whenever the user wants to plan a non-trivial feature before writing code with spec-driven development that is viewable in Kiro — requirements, then design, then a task breakdown, then incremental implementation, saved as a real Kiro spec under `.kiro/specs/`. Trigger on phrases like "write a spec for X", "create a Kiro spec", "spec-driven", "EARS requirements", "plan this feature", "break this into tasks before we build it", "I want to see it in Kiro", or when a request is clearly a feature of meaningful size and the user hasn't handed over a design. Also use it to resume, revise, or execute work already under `.kiro/specs/` — check that directory first. Do NOT use it for small well-understood changes, pure bug fixes, or when the user explicitly asks to just write the code.
+description: Use this skill, in any language or stack (Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby and more), whenever the user wants to plan a non-trivial feature before writing code with spec-driven development that is viewable in Kiro — requirements, then design, then a task breakdown, then incremental implementation, saved as a real Kiro spec under `.kiro/specs/`. Trigger on phrases like "write a spec for X", "create a Kiro spec", "spec-driven", "EARS requirements", "plan this feature", "break this into tasks before we build it", "I want to see it in Kiro", or when a request is clearly a feature of meaningful size and the user hasn't handed over a design. Also use it to resume, revise, or execute work already under `.kiro/specs/` — check that directory first. Do NOT use it for small well-understood changes, pure bug fixes, or when the user explicitly asks to just write the code.
 ---
 
 # Kiro spec-driven development
 
 Turns a feature idea into three reviewed artifacts — `requirements.md`, `design.md`, `tasks.md` — in the exact folder format the Kiro IDE reads, then implements them task by task. The goal is to catch misunderstandings while they are cheap to fix (a sentence in a requirements doc) rather than expensive (a wrong abstraction half-built). Keep each artifact as short as it can be while still being useful.
 
-Exact file formats live in `references/kiro-format.md`; EARS patterns in `references/ears.md`; ready-to-fill skeletons in `templates/`. Read them before writing the first artifact.
+Exact file formats live in `references/kiro-format.md`; EARS patterns in `references/ears.md`; ready-to-fill skeletons in `templates/`; how to find build/test commands and conventions for any language in `references/stack-detection.md`. Read them before writing the first artifact.
+
+**Works in any language or stack** (Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby, or a mix). The spec files are plain markdown plus one JSON line, so nothing about them is language-specific. Detect the stack from the project's own marker files, use its own build and test commands, and write design snippets in its own language. Never assume a stack; if the signals conflict or are missing, record that as an open question.
 
 ## Workflow
 
@@ -23,13 +25,7 @@ idea → [Requirements] →(approve)→ [Design] →(approve)→ [Tasks] →(app
 2. **Existing work**: if that folder exists, read it first. Never overwrite an existing `requirements.md`, `design.md` or `tasks.md`. Work out which phase it reached (requirements only = design is next; requirements + design = tasks are next), show the user, and ask: revise, continue, or start over. A resumed spec keeps its current `specId`.
 3. **Steering**: read `.kiro/steering/*.md` if present (project product, tech and structure guidance). It informs requirements and design; follow it, don't restate it. Create steering files only when the user asks (see `templates/steering-*.md`).
 4. **Workflow type** (goes in `.config.kiro`): `requirements-first` (default — requirements, design, tasks), `design-first` (technical design drives the requirements), or `fast-task` (small change, tasks only). Ask only if the user's intent is unclear.
-5. **Spec id**: for a new spec, run
-
-   ```bash
-   node "${CLAUDE_PLUGIN_ROOT}/skills/kiro-spec-driven/scripts/next-spec-id.mjs" .
-   ```
-
-   It prints the next sequential id: `0001`, `0002`, ... (highest existing numeric `specId` plus one, zero-padded to 4 digits; `0001` when there are none). Legacy non-numeric ids such as UUIDs are ignored for the count and left untouched. Never reuse or renumber an id.
+5. **Spec id**: for a new spec, compute the next sequential id: `0001`, `0002`, ... (highest existing numeric `specId` under `.kiro/specs/*/.config.kiro` plus one, zero-padded to 4 digits; `0001` when there are none). Legacy non-numeric ids such as UUIDs are ignored for the count and left untouched. Never reuse or renumber an id. No runtime is required: `references/spec-id.md` gives a file-tools method plus bash and PowerShell snippets (and an optional Node script), so it works the same in any project, whatever its language.
 
 6. Create `.kiro/specs/{feature-name}/.config.kiro` as a single line of JSON:
 
@@ -50,7 +46,7 @@ Pin down *what* to build and *how we will know it is done*, before any thought o
 
 Work out *how*, grounded in the codebase that exists, not a textbook architecture.
 
-1. Inspect first: relevant modules, frameworks in use, `CLAUDE.md`, `.kiro/steering/`, similar features, existing tests and conventions.
+1. Inspect first: relevant modules, frameworks in use, `CLAUDE.md`, `.kiro/steering/`, similar features, existing tests and conventions. Identify the language and framework from marker files (`references/stack-detection.md`) and write interfaces and data models in that language.
 2. Write `design.md` from `templates/design.md` at the depth the feature warrants (drop sections that don't apply): Overview with key decisions and rejected alternatives, Architecture, Components and Interfaces, Data Models, Correctness Properties (`*For any* ...` statements that map to property tests).
 3. Present the draft, wait for approval. If feedback changes the approach, update `design.md` rather than carrying the delta only in conversation.
 
@@ -68,7 +64,7 @@ Turn the approved design into an ordered checklist, executable incrementally.
 Work through `tasks.md` top to bottom, one task at a time:
 
 1. Implement following the codebase's real conventions, not the spec's illustrative style.
-2. Run the tests the task introduces or touches. Report results honestly; a task is never done on a guess or an unrun test.
+2. Run the tests the task introduces or touches, using the project's own test command (from its README, `CLAUDE.md`, CI config or `references/stack-detection.md`). Report results honestly; a task is never done on a guess or an unrun test.
 3. Tick the box (`- [x]`) in `tasks.md` as each task completes so the file always reflects real progress.
 4. If a task is wrong or the design must change, stop and tell the user; a design-level surprise belongs back in `design.md`, not buried in a diff.
 5. Check in at natural milestones on large or risky features; don't ask permission before every single task once execution is approved.

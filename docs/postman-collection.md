@@ -8,10 +8,14 @@ Creates or updates a Postman collection and Local/Production environments for an
 |---|---|
 | OpenAPI document exists | `postman spec generate collection <spec> -n "<API> API" --force`, then inspect, preserve hand-added scripts, apply conventions |
 | No spec, spec wanted | Flag the gap, get approval before adding minimal OpenAPI middleware, then generate |
-| No spec, none wanted | Hand-author a v2.1 collection from the controllers, starting from `references/collection-v21-skeleton.json` |
+| No spec, none wanted | Hand-author a v2.1 collection from the route definitions, starting from `references/collection-v21-skeleton.json` |
 | Collection exists, API changed | Diff endpoints vs requests; add, change and **remove** in place; lint |
 
 `--force` only adds and updates; requests for deleted endpoints are removed explicitly.
+
+## Any language
+
+A collection only cares about HTTP, so the API can be written in Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby or anything else. The skill finds the contract through the framework's OpenAPI support (ASP.NET, NestJS, Express, Fastify, FastAPI, Django REST framework, Flask, Laravel, Symfony, Spring, Go, Rust, Rails) or reads route declarations when there is no spec, and takes the base URL, login route and token shape from the project itself. The Postman scripts run inside Postman, so they are language-independent. Reference: `references/api-discovery.md`.
 
 ## Conventions (from the Aldo OMS Dashboard API collection)
 

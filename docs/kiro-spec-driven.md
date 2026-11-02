@@ -25,11 +25,15 @@ Everything lands in `.kiro/specs/<kebab-feature-name>/`:
 
 ## Sequential spec ids
 
-`specId` is `0001`, `0002`, ... : the highest existing purely numeric `specId` under `.kiro/specs/*/.config.kiro`, plus one, zero-padded to four digits (`0001` when none exist). Non-numeric legacy ids such as UUIDs are ignored for counting and left alone. Resuming a spec keeps its id. The logic is in `plugins/kiro-spec-driven/skills/kiro-spec-driven/scripts/next-spec-id.mjs`:
+`specId` is `0001`, `0002`, ... : the highest existing purely numeric `specId` under `.kiro/specs/*/.config.kiro`, plus one, zero-padded to four digits (`0001` when none exist). Non-numeric legacy ids such as UUIDs are ignored for counting and left alone. Resuming a spec keeps its id. No runtime is required: `references/spec-id.md` gives a file-tools method plus bash and PowerShell snippets that work in any project, and `scripts/next-spec-id.mjs` is an optional Node version:
 
 ```bash
 node plugins/kiro-spec-driven/skills/kiro-spec-driven/scripts/next-spec-id.mjs <projectRoot>
 ```
+
+## Any language
+
+Specs are markdown plus one JSON line, so they are the same for every stack. The skill detects the language from marker files (`package.json`, `*.csproj`, `pyproject.toml`, `composer.json`, `Cargo.toml`, `go.mod`, `pom.xml`, `Gemfile`), runs the project's own build and test commands, uses its existing test and property-test tooling, and writes interfaces and data models in its language. Where signals conflict or are missing it records an open question instead of guessing. Reference: `references/stack-detection.md`.
 
 ## EARS acceptance criteria
 

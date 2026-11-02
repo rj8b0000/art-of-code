@@ -23,7 +23,7 @@ One line of JSON:
 {"specId": "0001", "workflowType": "requirements-first", "specType": "feature"}
 ```
 
-- `specId`: sequential, zero-padded to 4 digits (`0001`, `0002`, ...). Next id = highest existing purely numeric `specId` + 1. Legacy ids that are not purely numeric (for example UUIDs written by older tooling) are ignored for counting and never renumbered. A resumed spec keeps its id. `scripts/next-spec-id.mjs` implements this.
+- `specId`: sequential, zero-padded to 4 digits (`0001`, `0002`, ...). Next id = highest existing purely numeric `specId` + 1. Legacy ids that are not purely numeric (for example UUIDs written by older tooling) are ignored for counting and never renumbered. A resumed spec keeps its id. `references/spec-id.md` gives runtime-free ways to compute it (file tools, bash, PowerShell); `scripts/next-spec-id.mjs` is an optional Node version.
 - `workflowType`: `requirements-first` | `design-first` | `fast-task`.
 - `specType`: `feature`.
 
