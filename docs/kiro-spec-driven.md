@@ -40,7 +40,7 @@ Everything lands in `.kiro/specs/<kebab-feature-name>/`:
 `specId` is `0001`, `0002`, ... : the highest existing purely numeric `specId` under `.kiro/specs/*/.config.kiro`, plus one, zero-padded to four digits (`0001` when none exist). Non-numeric legacy ids such as UUIDs are ignored for counting and left alone. Resuming a spec keeps its id. No runtime is required: `references/spec-id.md` gives a file-tools method plus bash and PowerShell snippets that work in any project, and `scripts/next-spec-id.mjs` is an optional Node version:
 
 ```bash
-node plugins/kiro-spec-driven/skills/kiro-spec-driven/scripts/next-spec-id.mjs <projectRoot>
+node plugins/art-of-code/skills/kiro-spec-driven/scripts/next-spec-id.mjs <projectRoot>
 ```
 
 ## Any language

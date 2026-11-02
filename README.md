@@ -1,11 +1,12 @@
-# claude-kiro-spec-driven
+# art-of-code
 
-A Claude Code plugin with two skills:
+A Claude Code plugin with three skills:
 
 - **`kiro-spec-driven`** — spec-driven development (requirements, design, tasks, implementation) that writes **real Kiro specs** under `.kiro/specs/`, so the result opens natively in the [Kiro](https://kiro.dev) IDE. Specs get sequential ids (`0001`, `0002`, ...).
 - **`postman-collection`** — creates and updates a Postman collection and its Local/Production environments for an HTTP API, from an OpenAPI document or from the route definitions, with bearer auth and auto-login built in.
+- **`dotnet-skills`** — configures a **.NET** project to engineering standards (layering, `Contracts/` folders, DI registration, async and logging rules, Central Package Management, structural tests): inspects the project, reports gaps, then writes the standards as a Kiro steering file after your approval. .NET only. Details: [docs/dotnet-skills.md](docs/dotnet-skills.md).
 
-**Both skills work in any language or stack**: Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby, or a mix. See [Any language](#any-language).
+`kiro-spec-driven` and `postman-collection` work in any language or stack: Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby, or a mix. See [Any language](#any-language).
 
 Independent community project; not an official Anthropic or Kiro product.
 
@@ -14,19 +15,29 @@ Independent community project; not an official Anthropic or Kiro product.
 In Claude Code:
 
 ```
-/plugin marketplace add rj8b0000/claude-kiro-spec-driven
-/plugin install kiro-spec-driven@claude-kiro-spec-driven
+/plugin marketplace add rj8b0000/art-of-code
+/plugin install art-of-code@art-of-code
 ```
 
-Verify with `/plugin` (Installed tab), or type `/` and look for `/kiro-spec-driven:kiro-spec-driven` and `/kiro-spec-driven:postman-collection`. If the repo is private, each person needs their own GitHub read access (SSH key or HTTPS credential) configured in git.
+Verify with `/plugin` (Installed tab), or type `/` and look for `/art-of-code:kiro-spec-driven`, `/art-of-code:postman-collection` and `/art-of-code:dotnet-skills`. If the repo is private, each person needs their own GitHub read access (SSH key or HTTPS credential) configured in git.
+
+**Coming from `claude-kiro-spec-driven`?** The repo, marketplace and plugin were renamed to `art-of-code`, and skill commands now start with `/art-of-code:`. An existing install does not update in place:
+
+```
+claude plugin uninstall kiro-spec-driven@claude-kiro-spec-driven
+claude plugin marketplace remove claude-kiro-spec-driven
+claude plugin marketplace add rj8b0000/art-of-code
+claude plugin install art-of-code@art-of-code
+```
 
 ## Use
 
-Both skills trigger automatically from the task description, or run them explicitly:
+The skills trigger automatically from the task description, or run them explicitly:
 
 ```
-/kiro-spec-driven:kiro-spec-driven      write a spec for "order cancellation flow"
-/kiro-spec-driven:postman-collection    create a Postman collection for this API
+/art-of-code:kiro-spec-driven      write a spec for "order cancellation flow"
+/art-of-code:postman-collection    create a Postman collection for this API
+/art-of-code:dotnet-skills         configure this .NET project to our standards
 ```
 
 ### Spec-driven workflow
@@ -62,10 +73,11 @@ Neither skill depends on the project's language or on any runtime.
 
 ```
 .claude-plugin/marketplace.json
-plugins/kiro-spec-driven/
+plugins/art-of-code/
   .claude-plugin/plugin.json
   skills/kiro-spec-driven/     SKILL.md, templates/, references/ (format, EARS, stack detection, spec id), scripts/next-spec-id.mjs (optional)
   skills/postman-collection/   SKILL.md, references/ (scripts, skeleton collection, conventions, API discovery)
+  skills/dotnet-skills/        SKILL.md, templates/dotnet-engineering-standards.md
 docs/                          usage and per-skill guides
 ```
 
