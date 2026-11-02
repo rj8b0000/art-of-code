@@ -1,0 +1,232 @@
+{
+  "info": {
+    "name": "<API name>",
+    "description": "Setup: import this collection and one environment, select it, set `userName` and `password` (secret) on the environment, then send any request. Auth is Bearer {{accessToken}} inherited by every request; a collection pre-request script logs in automatically when the token is missing or about to expire.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-login / token refresh. Collection-level pre-request script.",
+          "// Runs before every request. If there is no token, or the stored one expires within",
+          "// 2 minutes, it silently calls the login endpoint and stores the new token.",
+          "// The login request itself is skipped (no recursion).",
+          "// Adjust LOGIN_PATH to the API's real login route.",
+          "",
+          "const LOGIN_PATH = '/api/Auth/login';",
+          "const isLoginRequest = String(pm.request.url.toString()).indexOf(LOGIN_PATH) !== -1;",
+          "",
+          "if (!isLoginRequest) {",
+          "    const token     = pm.environment.get('accessToken');",
+          "    const expiresAt = Number(pm.environment.get('tokenExpiresAt') || 0);",
+          "    const skewMs    = 2 * 60 * 1000;",
+          "    const stale     = !token || !expiresAt || Date.now() > (expiresAt - skewMs);",
+          "",
+          "    if (stale) {",
+          "        const baseUrl  = pm.environment.get('baseUrl');",
+          "        const userName = pm.environment.get('userName');",
+          "        const password = pm.environment.get('password');",
+          "",
+          "        const missing = [];",
+          "        if (!baseUrl)  missing.push('baseUrl');",
+          "        if (!userName) missing.push('userName');",
+          "        if (!password) missing.push('password');",
+          "",
+          "        if (missing.length) {",
+          "            console.warn('[auth] cannot auto-login: set ' + missing.join(', ') + ' on the active environment.');",
+          "        } else {",
+          "            pm.sendRequest({",
+          "                url: baseUrl.replace(/\\/+$/, '') + LOGIN_PATH,",
+          "                method: 'POST',",
+          "                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },",
+          "                body: { mode: 'raw', raw: JSON.stringify({ userName, password }) }",
+          "            }, (err, res) => {",
+          "                if (err) { console.error('[auth] auto-login failed:', err); return; }",
+          "                if (res.code !== 200) { console.error('[auth] auto-login returned HTTP ' + res.code); return; }",
+          "",
+          "                let json;",
+          "                try { json = res.json(); }",
+          "                catch (e) { console.error('[auth] login response was not JSON'); return; }",
+          "",
+          "                // Tolerates a bare body and a { success, data } envelope.",
+          "                const payload  = (json && json.data) ? json.data : json;",
+          "                const newToken = payload && (payload.token || payload.Token);",
+          "                if (!newToken) { console.error('[auth] no token field in login response'); return; }",
+          "",
+          "                pm.environment.set('accessToken', newToken);",
+          "",
+          "                // tokenExpired is a Unix epoch (seconds) when present; otherwise assume 60 minutes.",
+          "                const exp = payload.tokenExpired || payload.TokenExpired;",
+          "                const expiresAtMs = exp ? Number(exp) * 1000 : Date.now() + 60 * 60 * 1000;",
+          "                pm.environment.set('tokenExpiresAt', String(expiresAtMs));",
+          "",
+          "                const refresh = payload.refreshToken || payload.RefreshToken;",
+          "                if (refresh) pm.environment.set('refreshToken', refresh);",
+          "",
+          "                console.log('[auth] token refreshed, valid until ' + new Date(expiresAtMs).toISOString());",
+          "            });",
+          "        }",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection-level assertions applied to every request.",
+          "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+          "",
+          "if (pm.response.code === 401) {",
+          "    console.warn('[auth] 401: token rejected. Clear `accessToken` on the environment to force a fresh login.');",
+          "}",
+          "",
+          "let json = null;",
+          "try { json = pm.response.json(); } catch (e) { /* non-JSON body */ }",
+          "",
+          "// Only asserted when the API wraps responses in a { success, errorMessage, data } envelope.",
+          "if (json && Object.prototype.hasOwnProperty.call(json, 'success')) {",
+          "    pm.test('envelope.success is true', () => {",
+          "        pm.expect(json.success, json.errorMessage || 'errorMessage was null').to.eql(true);",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [],
+  "item": [
+    {
+      "name": "00 · Authentication",
+      "item": [
+        {
+          "name": "Login  →  captures {{accessToken}}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Test script for the explicit Login request: captures the token into the environment.",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "",
+                  "const json    = pm.response.json();",
+                  "const payload = json && json.data ? json.data : json;",
+                  "const token   = payload && (payload.token || payload.Token);",
+                  "",
+                  "pm.test('token present', () => pm.expect(token, 'no token in response').to.be.a('string').and.not.empty);",
+                  "",
+                  "if (token) {",
+                  "    pm.environment.set('accessToken', token);",
+                  "",
+                  "    const exp = payload.tokenExpired || payload.TokenExpired;",
+                  "    const expiresAtMs = exp ? Number(exp) * 1000 : Date.now() + 60 * 60 * 1000;",
+                  "    pm.environment.set('tokenExpiresAt', String(expiresAtMs));",
+                  "",
+                  "    const refresh = payload.refreshToken || payload.RefreshToken;",
+                  "    if (refresh) pm.environment.set('refreshToken', refresh);",
+                  "",
+                  "    console.log('[auth] token stored, valid until ' + new Date(expiresAtMs).toISOString());",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"{{userName}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/Auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "Auth",
+                "login"
+              ]
+            },
+            "description": "Obtains a bearer token. Normally never run by hand: the collection pre-request script calls it automatically."
+          },
+          "response": []
+        },
+        {
+          "name": "Clear stored token (force re-login)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.unset('accessToken');",
+                  "pm.environment.unset('tokenExpiresAt');",
+                  "pm.environment.unset('refreshToken');",
+                  "console.log('[auth] stored token cleared; the next request will log in again.');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Utility. Clears the stored token so the next request re-authenticates. Use after switching environments or credentials."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 · <Resource>",
+      "item": []
+    },
+    {
+      "name": "99 · Utilities",
+      "item": []
+    }
+  ]
+}
