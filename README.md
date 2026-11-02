@@ -32,10 +32,10 @@ Both skills trigger automatically from the task description, or run them explici
 ### Spec-driven workflow
 
 ```
-idea → Requirements →(approve)→ Design →(approve)→ Tasks →(approve)→ Execution
+Project ready? →(approve)→ Requirements →(approve)→ Design →(approve)→ Tasks →(approve)→ Execution
 ```
 
-Each phase ends with an approval gate. Output lands in your project:
+Each phase ends with an approval gate. **Phase 0 comes first:** if the folder has no real project yet (no stack marker files or source), the skill asks for the stack, name, folder and database, shows the scaffold commands, and only scaffolds after you approve; `.kiro/` is then created in that project's root. Passwords or tokens in your request are never written into a spec; they go into the stack's untracked local secret store. Output lands in your project:
 
 ```
 .kiro/specs/<feature>/

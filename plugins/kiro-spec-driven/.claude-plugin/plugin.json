@@ -1,6 +1,6 @@
 {
   "name": "kiro-spec-driven",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spec-driven development that writes real Kiro specs under .kiro/specs (sequential spec ids, EARS requirements, design, dependency-graphed tasks), plus a skill that creates and updates Postman collections.",
   "author": {
     "name": "rj8b0000"

@@ -7,17 +7,26 @@ description: Use this skill, in any language or stack (Node.js, .NET, Python, PH
 
 Turns a feature idea into three reviewed artifacts — `requirements.md`, `design.md`, `tasks.md` — in the exact folder format the Kiro IDE reads, then implements them task by task. The goal is to catch misunderstandings while they are cheap to fix (a sentence in a requirements doc) rather than expensive (a wrong abstraction half-built). Keep each artifact as short as it can be while still being useful.
 
-Exact file formats live in `references/kiro-format.md`; EARS patterns in `references/ears.md`; ready-to-fill skeletons in `templates/`; how to find build/test commands and conventions for any language in `references/stack-detection.md`. Read them before writing the first artifact.
+Project readiness and scaffolding rules live in `references/project-readiness.md`. Exact file formats live in `references/kiro-format.md`; EARS patterns in `references/ears.md`; ready-to-fill skeletons in `templates/`; how to find build/test commands and conventions for any language in `references/stack-detection.md`. Read them before writing the first artifact.
 
 **Works in any language or stack** (Node.js, .NET, Python, PHP, Rust, Go, Java, Ruby, or a mix). The spec files are plain markdown plus one JSON line, so nothing about them is language-specific. Detect the stack from the project's own marker files, use its own build and test commands, and write design snippets in its own language. Never assume a stack; if the signals conflict or are missing, record that as an open question.
 
 ## Workflow
 
-Four phases, strictly in order. Each of the first three ends with a **stop-and-wait approval gate** — do not advance, and do not start implementing, until the user explicitly approves the current artifact. "Create a spec" or "write requirements for X" is a request for phase 1 only: stop there. Silence or a topic change is not approval.
+A readiness gate (phase 0) and then four phases, strictly in order. Phase 0 and each of the first three phases end with a **stop-and-wait approval gate** — do not advance, and do not start implementing, until the user explicitly approves. "Create a spec" or "write requirements for X" is a request for phase 1 only: stop there. Silence or a topic change is not approval.
 
 ```
-idea → [Requirements] →(approve)→ [Design] →(approve)→ [Tasks] →(approve)→ [Execution]
+[0 Project ready?] →(approve)→ [Requirements] →(approve)→ [Design] →(approve)→ [Tasks] →(approve)→ [Execution]
 ```
+
+## Phase 0: Project readiness (always first)
+
+**Write nothing under `.kiro/` until a real project exists to hold it.** Check the working folder for stack marker files, source files, or a git repo (`references/project-readiness.md` lists them per ecosystem). A folder that is empty, or holds only `.kiro/`, is not a project.
+
+- **Project exists**: note its root (that is where `.kiro/` goes, next to its marker files, never in a parent folder), then continue to "Before starting".
+- **No project**: stop and ask the user, in one short batch, for what is missing: stack and version, project name and folder, database or key dependencies, `git init` yes or no, and whether to scaffold now (default, so the design can inspect real code) or write the spec first with "scaffold the project" as Task 1. Show the exact scaffold commands and wait for approval; never scaffold, install or generate without it. Then scaffold with the ecosystem's standard generator, confirm it builds, and place `.kiro/` in that project's root.
+- **Unclear target** (a parent folder with several projects, a monorepo): ask which one.
+- **Secrets in the request** (a password, token or connection string): never write the value into any `.kiro/` file or committed source. Use a configuration key, store the value only in the stack's local untracked secret store with the user's approval, and tell the user where it went. See `references/project-readiness.md`.
 
 ## Before starting
 
@@ -71,7 +80,7 @@ Work through `tasks.md` top to bottom, one task at a time:
 
 ## Rules that keep specs Kiro-compatible
 
-- Specs go in `.kiro/specs/`, never anywhere else. Folder = kebab-case feature name.
+- Specs go in `.kiro/specs/` at the **project root** (phase 0), never in an empty folder, a parent of several projects, or anywhere else. Folder = kebab-case feature name.
 - `.config.kiro` is required, one line, `specId` sequential and zero-padded.
 - **Never create or edit `tasks.meta.json`** — Kiro generates it as runtime state (execution history, property-test results).
 - Never write secrets, tokens, passwords or production hostnames into any spec or steering file; reference configuration keys instead.

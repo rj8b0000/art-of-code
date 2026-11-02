@@ -5,8 +5,20 @@ Spec-driven development that produces real Kiro specs.
 ## Workflow
 
 ```
-idea → [Requirements] →(approve)→ [Design] →(approve)→ [Tasks] →(approve)→ [Execution]
+[0 Project ready?] →(approve)→ [Requirements] →(approve)→ [Design] →(approve)→ [Tasks] →(approve)→ [Execution]
 ```
+
+## Phase 0: project readiness
+
+Nothing is written under `.kiro/` until a real project exists to hold it. The skill checks the working folder for stack marker files, source files or a git repo; an empty folder, or one holding only `.kiro/`, does not count.
+
+- **No project**: it asks, in one short batch, for the stack and version, project name and folder, database or key dependencies, `git init` yes/no, and whether to scaffold now (default) or write the spec first with "scaffold the project" as Task 1. It shows the exact scaffold commands and waits for your approval before running anything, confirms the result builds, then creates `.kiro/` in that project's root.
+- **Unclear target** (a parent folder with several projects, a monorepo): it asks which one.
+- **Secrets in the request**: a password, token or connection string is never written into any `.kiro/` file or committed source. The spec refers to a configuration key; the value goes only into the stack's local untracked secret store (for example `dotnet user-secrets` or a git-ignored `.env`), with your approval, and the reply says where it went.
+
+Scaffold commands per ecosystem and secret stores are in `references/project-readiness.md`.
+
+## Phases 1 to 4
 
 Every phase ends with a stop-and-wait gate. "Write a spec" means phase 1 only. A topic change or silence is not approval. An existing `requirements.md`, `design.md` or `tasks.md` is never overwritten; the skill reads what is there, works out which phase it reached, and asks whether to revise, continue or start over.
 

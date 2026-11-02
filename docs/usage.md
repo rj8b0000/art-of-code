@@ -17,12 +17,13 @@ Once installed, the skills are available in every project you open in Claude Cod
 
 In any project, ask for a spec in plain words ("write a spec for adding invoice export") or run `/kiro-spec-driven:kiro-spec-driven`. Claude will:
 
-1. Pick a kebab-case feature name and check `.kiro/specs/` for existing work.
-2. Create `.kiro/specs/<feature>/.config.kiro` with the next sequential id.
-3. Write `requirements.md`, then stop for your approval.
-4. After approval, inspect your codebase and write `design.md`, then stop.
-5. After approval, write `tasks.md`, then stop.
-6. On your go-ahead, implement tasks one by one, ticking `- [x]` as each finishes.
+1. Check that the folder holds a real project. If it doesn't, ask you for the stack, name, folder and database, show the scaffold commands, and scaffold only after you approve. `.kiro/` is created in that project's root. Passwords in your prompt are never written into the spec.
+2. Pick a kebab-case feature name and check `.kiro/specs/` for existing work.
+3. Create `.kiro/specs/<feature>/.config.kiro` with the next sequential id.
+4. Write `requirements.md`, then stop for your approval.
+5. After approval, inspect your codebase and write `design.md`, then stop.
+6. After approval, write `tasks.md`, then stop.
+7. On your go-ahead, implement tasks one by one, ticking `- [x]` as each finishes.
 
 Open the same folder in Kiro to view and run the spec there.
 
