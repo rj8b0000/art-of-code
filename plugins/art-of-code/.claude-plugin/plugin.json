@@ -1,12 +1,12 @@
 {
   "name": "art-of-code",
-  "version": "0.3.0",
-  "description": "Spec-driven development that writes real Kiro specs under .kiro/specs (sequential spec ids, EARS requirements, design, dependency-graphed tasks), a skill that creates and updates Postman collections, and a skill that configures .NET projects to engineering standards.",
+  "version": "0.4.0",
+  "description": "Spec-driven development that writes real Kiro specs under .kiro/specs (sequential spec ids, EARS requirements, design, dependency-graphed tasks), a skill that creates and updates Postman collections, a skill that configures .NET projects to engineering standards, and a skill that reviews .NET database design and data access.",
   "author": {
     "name": "rj8b0000"
   },
   "homepage": "https://github.com/rj8b0000/art-of-code",
   "repository": "https://github.com/rj8b0000/art-of-code",
   "license": "MIT",
-  "keywords": ["kiro", "spec-driven", "ears", "requirements", "postman", "api", "dotnet"]
+  "keywords": ["kiro", "spec-driven", "ears", "requirements", "postman", "api", "dotnet", "efcore", "database", "code-review"]
 }

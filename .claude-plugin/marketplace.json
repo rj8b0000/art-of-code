@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "art-of-code",
-  "description": "Spec-driven development for Claude Code that writes real Kiro specs (.kiro/specs), a skill that creates and updates Postman collections, and a skill that configures .NET projects. Independent community project, not an official Anthropic or Kiro product.",
+  "description": "Spec-driven development for Claude Code that writes real Kiro specs (.kiro/specs), a skill that creates and updates Postman collections, a skill that configures .NET projects, and a skill that reviews .NET database design. Independent community project, not an official Anthropic or Kiro product.",
   "owner": {
     "name": "rj8b0000"
   },
@@ -9,7 +9,7 @@
     {
       "name": "art-of-code",
       "source": "./plugins/art-of-code",
-      "description": "Kiro-format spec-driven workflow (requirements, design, tasks) with sequential spec ids, a Postman collection create/update skill, and a .NET project configuration skill."
+      "description": "Kiro-format spec-driven workflow (requirements, design, tasks) with sequential spec ids, a Postman collection create/update skill, a .NET project configuration skill, and a .NET database design and data-access review skill."
     }
   ]
 }
